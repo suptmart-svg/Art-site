@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connecting...</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #0a1f3d, #1c2e4a);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 0;
+    }
+
+    .content {
+      text-align: center;
+      padding: 20px;
+      z-index: 2;
+    }
+
+    .content h1 {
+      font-size: 18px;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .content p {
+      font-size: 11px;
+      opacity: 0.75;
+    }
+
+    .dot-loader {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .dot-loader span {
+      width: 7px;
+      height: 7px;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: blink 1.2s infinite ease-in-out;
+    }
+
+    .dot-loader span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot-loader span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0; }
+      40% { opacity: 1; }
+    }
+
+    .ticker {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .ticker-text {
+      white-space: nowrap;
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll-left 18s linear infinite;
+      font-size: 12px;
+      color: #ffffff;
+      opacity: 0.85;
+    }
+
+    @keyframes scroll-left {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .snowflake {
+      position: fixed;
+      top: -10px;
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: fall linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(360deg); }
+    }
+
+    .alert-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 22px 30px;
+      text-align: center;
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1.7;
+      opacity: 0;
+      transition: opacity 1s ease, transform 0.8s ease;
+      z-index: 3;
+      max-width: 320px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .alert-box.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .telegram-link {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .telegram-link.show {
+      opacity: 1;
+    }
+
+    .telegram-link img {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .telegram-link img:hover {
+      transform: scale(1.1);
+    }
+
+    .telegram-link p {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #ffffff;
+      opacity: 0.85;
+    }
+
+    .admin-count {
+      margin-top: 12px;
+      font-size: 10px;
+      color: #cccccc;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Connecting to server...</h1>
+    <p>Please wait while we establish a secure connection.</p>
+    <div class="dot-loader">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="ticker">
+    <div class="ticker-text">
+      new version bot and server Art | Happy birthday Owner team Art | Happy new year 2026
+    </div>
+  </div>
+  
+
+  <div class="alert-box" id="alertBox">
+    حساب و احراز شما جهت ورود به پنل تیم تکمیل نشده<br>
+    جهت تکمیل به مالک مراجعه کنید<br><br>
+    Your account and verification are incomplete for team panel access.<br>
+    Please contact the owner to complete it.
+    <div class="admin-count" id="adminCount"></div>
+  </div>
+
+  <div class="telegram-link" id="telegramLink">
+    <a href="https://t.me/AbolWin" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo">
+    </a>
+    <p>برای ارتباط با مالک بر روی تلگرام ضربه بزنید</p>
+  </div>
+
+  <script>
+    // بارش برف
+    for (let i = 0; i < 40; i++) {
+      const snow = document.createElement('div');
+      snow.className = 'snowflake';
+      snow.style.left = Math.random() * window.innerWidth + 'px';
+      snow.style.animationDuration = (6 + Math.random() * 6) + 's';
+      snow.style.animationDelay = Math.random() * 10 + 's';
+      document.body.appendChild(snow);
+    }
+
+    // نمایش هشدار و تلگرام بعد از ۵ ثانیه
+    setTimeout(() => {
+      document.getElementById('alertBox').classList.add('show');
+      document.getElementById('telegramLink').classList.add('show');
+    }, 5000);
+
+    // شمارنده ادمین آنلاین با حافظه موقت
+    const key = 'adminOnlineCount';
+    const timestampKey = 'adminOnlineTimestamp';
+    const now = Date.now();
+    const saved = localStorage.getItem(key);
+    const savedTime = localStorage.getItem(timestampKey);
+
+    let adminOnline;
+
+    if (!saved || !savedTime || now - parseInt(savedTime) > 5 * 60 * 1000) {
+      adminOnline = Math.floor(Math.random() * 8) + 1;
+      localStorage.setItem(key, adminOnline);
+      localStorage.setItem(timestampKey, now);
+    } else {
+      adminOnline = saved;
+    }
+
+    document.getElementById('adminCount').textContent = `Admin online: ${adminOnline}`;
+  </script>
+</body>
+</html>
+<body>
+  <div class="ticker" style="top: 0; bottom: auto; border-top: none; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+    <div class="ticker-text" style="animation: scroll-left 18s linear infinite;">
+      نسخه جدید بات و سرور آرت | تولد مالک تیم آرت مبارک | سال نو ۲۰۲۶ مبارک
+    </div>
+  </div>
+
+  <div class="content">
+    <script>
+// افکت برف طبیعی‌تر با اندازه، سرعت، مسیر و شفافیت متنوع
+for (let i = 0; i < 60; i++) {
+  const snow = document.createElement('div');
+  snow.className = 'snowflake';
+
+  const size = Math.random() * 4 + 2; // بین 2 تا 6 پیکسل
+  snow.style.width = `${size}px`;
+  snow.style.height = `${size}px`;
+
+  snow.style.left = Math.random() * window.innerWidth + 'px';
+  snow.style.animationDuration = (6 + Math.random() * 8) + 's';
+  snow.style.animationDelay = Math.random() * 10 + 's';
+  snow.style.opacity = (0.2 + Math.random() * 0.6).toFixed(2);
+
+  document.body.appendChild(snow);
+}
+</script>
+<!-- کادر ساعت و تاریخ شیشه‌ای و جمع‌وجور -->
+<div id="clockBox" style="
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 14px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: #e0fdfc;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  z-index: 10;
+  animation: floatFade 6s ease-in-out infinite;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+">
+  ⏳ در حال بارگذاری...
+</div>
+
+<style>
+@keyframes floatFade {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-2px);
+    opacity: 1;
+  }
+}
+</style>
+
+<script>
+// ساعت و تاریخ زنده با فرمت فارسی
+function updateClock() {
+  const now = new Date();
+  const options = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  };
+  const formatted = now.toLocaleString('fa-IR', options);
+  document.getElementById('clockBox').innerHTML = `📅 ${formatted}`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+<!-- دکمه تغییر تم با طراحی شیشه‌ای و محو -->
+<div id="themeTap" style="
+  position: fixed;
+  top: 40px;
+  left: 20px;
+  padding: 9px 18px;
+  font-size: 11px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #e0fdfc;
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border-radius: 14px;
+  backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 0 8px rgba(255,255,255,0.06),
+    0 0 12px rgba(0,255,255,0.04),
+    0 0 24px rgba(0,255,255,0.02);
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.5s ease;
+  animation: subtleWave 8s ease-in-out infinite;
+  user-select: none;
+">
+  🎨 تم: Ultra Light Glass
+</div>
+
+<!-- لایه فیلتر صفحه -->
+<div id="themeFilter" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background: rgba(255,255,255,0);
+  transition: background 1.2s ease, filter 1.2s ease;
+"></div>
+
+<style>
+@keyframes subtleWave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+</style>
+
+<script>
+const filter = document.getElementById('themeFilter');
+const tap = document.getElementById('themeTap');
+
+const themes = [
+  // 🌞 خیلی روشن
+  { name: 'Ultra Light Glass', bg: 'rgba(255,255,255,0.02)', filter: 'brightness(1.2) blur(2px)' },
+
+  // 🌚 خیلی تاریک
+  { name: 'Ultra Dark Matte', bg: 'rgba(0,0,0,0.25)', filter: 'brightness(0.75) contrast(1.2)' },
+
+  // 🎨 تم‌های مدرن
+  { name: 'Frosted Silver', bg: 'rgba(240,240,240,0.08)', filter: 'blur(4px) brightness(1.05)' },
+  { name: 'Neon Pulse', bg: 'rgba(0,255,255,0.08)', filter: 'contrast(1.3) saturate(1.4)' },
+  { name: 'Graphite Glow', bg: 'rgba(60,60,60,0.15)', filter: 'contrast(1.2) brightness(0.95)' },
+  { name: 'Rose Mist', bg: 'rgba(255,200,220,0.1)', filter: 'blur(2px) brightness(1.1)' },
+  { name: 'Cobalt Steel', bg: 'rgba(50,80,120,0.15)', filter: 'contrast(1.2) brightness(0.95)' },
+  { name: 'Emerald Drift', bg: 'rgba(0,120,90,0.1)', filter: 'blur(2px) saturate(1.2)' },
+  { name: 'Amber Glow', bg: 'rgba(255,180,80,0.1)', filter: 'brightness(1.1) saturate(1.2)' },
+  { name: 'Mono Noir', bg: 'rgba(0,0,0,0.15)', filter: 'grayscale(1) brightness(0.9)' },
+  { name: 'Cyber Purple', bg: 'rgba(80,0,120,0.15)', filter: 'contrast(1.2) saturate(1.4)' },
+  { name: 'Ocean Deep', bg: 'rgba(0,50,100,0.15)', filter: 'blur(2px) brightness(0.9)' },
+  { name: 'Sepia Vintage', bg: 'rgba(120,80,40,0.1)', filter: 'sepia(0.6) contrast(1.1)' },
+  { name: 'Velvet Crimson', bg: 'rgba(120,0,40,0.12)', filter: 'contrast(1.2) brightness(1.05)' },
+  { name: 'Aurora Dream', bg: 'rgba(120,80,200,0.1)', filter: 'blur(3px) saturate(1.3)' },
+  { name: 'Lime Pop', bg: 'rgba(180,255,100,0.1)', filter: 'saturate(1.4) brightness(1.1)' },
+  { name: 'Mystic Indigo', bg: 'rgba(40,0,80,0.2)', filter: 'blur(2px) saturate(1.4)' },
+  { name: 'Solarized Dark', bg: 'rgba(0,43,54,0.2)', filter: 'contrast(1.1) saturate(1.2)' },
+  { name: 'Terminal Green', bg: 'rgba(0,255,0,0.05)', filter: 'contrast(1.3) brightness(0.9)' },
+  { name: 'Blush Cloud', bg: 'rgba(255,180,220,0.1)', filter: 'blur(2px) brightness(1.05)' },
+  { name: 'Charcoal Ice', bg: 'rgba(20,20,30,0.2)', filter: 'brightness(0.85) blur(1px)' },
+  { name: 'Golden Dust', bg: 'rgba(255,220,150,0.1)', filter: 'contrast(1.2) brightness(1.1)' },
+  { name: 'Steel Night', bg: 'rgba(40,40,60,0.2)', filter: 'brightness(0.8) contrast(1.2)' },
+  { name: 'Cloudy Glass', bg: 'rgba(255,255,255,0.06)', filter: 'blur(5px) brightness(1.05)' }
+];
+
+let current = 0;
+tap.addEventListener('click', () => {
+  current = (current + 1) % themes.length;
+  const theme = themes[current];
+  filter.style.background = theme.bg;
+  filter.style.filter = theme.filter;
+  tap.innerHTML = `🎨 تم: ${theme.name}`;
+});
+</script>
+<style>
+@keyframes flashGlow {
+  0% { box-shadow: 0 0 0 rgba(0,255,255,0); }
+  50% { box-shadow: 0 0 20px rgba(0,255,255,0.4); }
+  100% { box-shadow: 0 0 0 rgba(0,255,255,0); }
+}
+.flash {
+  animation: flashGlow 0.6s ease-out;
+}
+</style>
+<script>
+tap.addEventListener('click', () => {
+  tap.classList.add('flash');
+  setTimeout(() => tap.classList.remove('flash'), 600);
+});
+</script>
+<style>
+#themeFilter {
+  transition: background 1.2s ease, filter 1.2s ease, transform 0.8s ease, opacity 0.8s ease;
+}
+.theme-transition {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+</style>
+<script>
+tap.addEventListener('click', () => {
+  current = (current + 1) % themes.length;
+  const theme = themes[current];
+  filter.classList.add('theme-transition');
+  setTimeout(() => {
+    filter.style.background = theme.bg;
+    filter.style.filter = theme.filter;
+    tap.innerHTML = `🎨 تم: ${theme.name}`;
+    filter.classList.remove('theme-transition');
+  }, 300);
+});
+</script>
+<style>
+@keyframes waveMotion {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(1px); }
+  100% { transform: translateY(0px); }
+}
+#themeFilter {
+  animation: waveMotion 12s ease-in-out infinite;
+}
+</style>
+<audio id="themeSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b1c9f4b4d.mp3?filename=click-124467.mp3" preload="auto"></audio>
+<script>
+const sound = document.getElementById('themeSound');
+tap.addEventListener('click', () => {
+  sound.currentTime = 0;
+  sound.play();
+});
+</script>
+<script>
+window.addEventListener('load', () => {
+  const hour = new Date().getHours();
+  if (hour >= 19 || hour < 6) current = 1; // Ultra Dark
+  else current = 0; // Ultra Light
+  const theme = themes[current];
+  filter.style.background = theme.bg;
+  filter.style.filter = theme.filter;
+  tap.innerHTML = `🎨 تم: ${theme.name}`;
+});
+</script>
+<canvas id="rainCanvas" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  display: none;
+"></canvas>
+
+<script>
+const rainCanvas = document.getElementById('rainCanvas');
+const rainCtx = rainCanvas.getContext('2d');
+rainCanvas.width = window.innerWidth;
+rainCanvas.height = window.innerHeight;
+
+let rainDrops = Array(300).fill().map(() => ({
+  x: Math.random() * rainCanvas.width,
+  y: Math.random() * rainCanvas.height,
+  l: Math.random() * 20 + 10,
+  s: Math.random() * 2 + 2
+}));
+
+function drawRain() {
+  rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+  rainCtx.strokeStyle = 'rgba(173,216,230,0.2)';
+  rainCtx.lineWidth = 1;
+  rainCtx.beginPath();
+  for (let d of rainDrops) {
+    rainCtx.moveTo(d.x, d.y);
+    rainCtx.lineTo(d.x, d.y + d.l);
+  }
+  rainCtx.stroke();
+  for (let d of rainDrops) {
+    d.y += d.s;
+    if (d.y > rainCanvas.height) {
+      d.y = -20;
+      d.x = Math.random() * rainCanvas.width;
+    }
+  }
+  requestAnimationFrame(drawRain);
+}
+<div id="cloudLayer" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: url('https://i.imgur.com/2nCt3Sbl.png') repeat-x;
+  background-size: cover;
+  opacity: 0.08;
+  animation: cloudDrift 60s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+  display: none;
+"></div>
+
+<style>
+@keyframes cloudDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: -1000px 0; }
+}
+</style>
+<div id="lightningFlash" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+"></div>
+
+<script>
+function triggerLightning() {
+  const flash = document.getElementById('lightningFlash');
+  flash.style.opacity = '0.6';
+  setTimeout(() => flash.style.opacity = '0', 100);
+}
+<style>
+@keyframes shakeAlert {
+  0% { transform: translate(0px, 0px); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-2px, 1px); }
+  80% { transform: translate(2px, -1px); }
+  100% { transform: translate(0px, 0px); }
+}
+.shake {
+  animation: shakeAlert 0.4s ease-in-out;
+}
+</style>
+<script>
+function triggerShake(target = document.body) {
+  target.classList.add('shake');
+  setTimeout(() => target.classList.remove('shake'), 400);
+}
+</script>
+<!-- Canvas برف -->
+<canvas id="snowCanvas" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+"></canvas>
+
+<script>
+// تنظیمات اولیه
+const canvas = document.getElementById('snowCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// ساخت دونه‌های برف
+let snowflakes = Array(200).fill().map(() => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 2 + 1,
+  s: Math.random() * 1 + 0.5,
+  vx: 0,
+  vy: 0
+}));
+
+let driftX = 0; // جهت افقی برف
+
+// رسم برف با انیمیشن نرم
+function drawSnow() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.beginPath();
+  for (let flake of snowflakes) {
+    ctx.moveTo(flake.x, flake.y);
+    ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
+  }
+  ctx.fill();
+
+  for (let flake of snowflakes) {
+    // انیمیشن نرم با easing
+    flake.vx += (driftX - flake.vx) * 0.1;
+    flake.x += flake.vx * flake.s;
+    flake.y += flake.s;
+
+    if (flake.y > canvas.height) flake.y = -10;
+    if (flake.x > canvas.width) flake.x = 0;
+    if (flake.x < 0) flake.x = canvas.width;
+  }
+
+  requestAnimationFrame(drawSnow);
+}
+drawSnow();
+
+// دریافت حرکت گوشی با حساسیت بالا
+window.addEventListener('deviceorientation', (e) => {
+  // e.gamma: چرخش افقی گوشی (بین -90 تا +90)
+  driftX = Math.max(-2, Math.min(2, e.gamma / 10)); // حساس و محدودشده
+});
+</script>
+<canvas id="snowCanvas" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity 1.8s ease, transform 2s ease;
+  filter: blur(2px);
+"></canvas>
+
+<script>
+const canvas = document.getElementById('snowCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let snowflakes = Array(200).fill().map(() => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 2 + 1,
+  s: Math.random() * 1 + 0.5,
+  vx: 0
+}));
+
+let driftX = 0;
+
+function drawSnow() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.beginPath();
+  for (let flake of snowflakes) {
+    ctx.moveTo(flake.x, flake.y);
+    ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
+  }
+  ctx.fill();
+
+  for (let flake of snowflakes) {
+    flake.vx += (driftX - flake.vx) * 0.1;
+    flake.x += flake.vx * flake.s;
+    flake.y += flake.s;
+    if (flake.y > canvas.height) flake.y = -10;
+    if (flake.x > canvas.width) flake.x = 0;
+    if (flake.x < 0) flake.x = canvas.width;
+  }
+
+  requestAnimationFrame(drawSnow);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    canvas.style.opacity = '1';
+    canvas.style.transform = 'scale(1)';
+  }, 600);
+  drawSnow();
+});
+
+window.addEventListener('deviceorientation', (e) => {
+  driftX = Math.max(-2, Math.min(2, e.gamma / 10));
+});
+</script>
+<style>
+.glitch {
+  position: relative;
+  color: white;
+  font-size: 32px;
+  font-family: 'Courier New', monospace;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  color: #0ff;
+  clip: rect(0, 0, 0, 0);
+}
+.glitch::before {
+  animation: glitchTop 1s infinite linear alternate-reverse;
+}
+.glitch::after {
+  color: #f0f;
+  animation: glitchBottom 1s infinite linear alternate-reverse;
+}
+@keyframes glitchTop {
+  0% { clip: rect(0, 9999px, 0, 0); }
+  50% { clip: rect(0, 9999px, 10px, 0); }
+  100% { clip: rect(0, 9999px, 0, 0); }
+}
+@keyframes glitchBottom {
+  0% { clip: rect(10px, 9999px, 20px, 0); }
+  50% { clip: rect(0, 9999px, 10px, 0); }
+  100% { clip: rect(10px, 9999px, 20px, 0); }
+}
+</style>
+
+<div class="glitch" data-text="ART">ART</div>
+<script>
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 20;
+  const y = (e.clientY / window.innerHeight - 0.5) * 20;
+  document.getElementById('themeFilter').style.transform = `translate(${x}px, ${y}px)`;
+});
+</script>
+<script>
+window.addEventListener('deviceorientation', (e) => {
+  const x = Math.max(-30, Math.min(30, e.gamma || 0));
+  const y = Math.max(-30, Math.min(30, e.beta || 0));
+  document.getElementById('themeFilter').style.transform =
+    `translate(${x * 0.5}px, ${y * 0.5}px)`;
+});
+</script>
+<script>
+let clickCount = 0;
+document.addEventListener('click', () => {
+  clickCount++;
+  if (clickCount === 10) {
+    triggerShake(); // لرزش
+    tap.click();     // تغییر تم
+    clickCount = 0;
+  }
+});
+</script>
+<script>
+let idleTimer;
+function goSleepMode() {
+  document.body.style.filter = 'blur(4px) brightness(0.6)';
+  document.body.style.transition = 'filter 1s ease';
+}
+function wakeUp() {
+  document.body.style.filter = 'none';
+}
+['mousemove', 'keydown', 'touchstart'].forEach(evt =>
+  document.addEventListener(evt, () => {
+    clearTimeout(idleTimer);
+    wakeUp();
+    idleTimer = setTimeout(goSleepMode, 6000); // 60 ثانیه بی‌حرکتی
+  })
+);
+idleTimer = setTimeout(goSleepMode, 60000);
+</script>
+<script>
+window.addEventListener('load', () => {
+  const hour = new Date().getHours();
+  if (hour >= 19 || hour < 6) current = 1; // Ultra Dark
+  else current = 0; // Ultra Light
+  const theme = themes[current];
+  filter.style.background = theme.bg;
+  filter.style.filter = theme.filter;
+  tap.innerHTML = `🎨 تم: ${theme.name}`;
+});
+</script>
+<script>
+// ورود سینمایی
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.body.classList.add('loaded');
+    randomWeatherEffects();
+    drawSnow();
+  }, 300);
+});
+
+// لرزش هشدار
+function triggerShake(target = document.body) {
+  target.classList.add('shake');
+  setTimeout(() => target.classList.remove('shake'), 400);
+}
+
+// واکنش به موس
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 20;
+  const y = (e.clientY / window.innerHeight - 0.5) * 20;
+  document.getElementById('themeFilter')?.style.transform = `translate(${x}px, ${y}px)`;
+});
+
+// واکنش به گوشی
+window.addEventListener('deviceorientation', (e) => {
+  const x = Math.max(-30, Math.min(30, e.gamma || 0));
+  const y = Math.max(-30, Math.min(30, e.beta || 0));
+  document.getElementById('themeFilter')?.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+  driftX = Math.max(-2, Math.min(2, e.gamma / 10));
+});
+
+// بی‌حرکتی = حالت خواب
+let idleTimer;
+function goSleepMode() {
+  document.body.style.filter = 'blur(4px) brightness(0.6)';
+}
+function wakeUp() {
+  document.body.style.filter = 'none';
+}
+['mousemove', 'keydown', 'touchstart'].forEach(evt =>
+  document.addEventListener(evt, () => {
+    clearTimeout(idleTimer);
+    wakeUp();
+    idleTimer = setTimeout(goSleepMode, 60000);
+  })
+);
+idleTimer = setTimeout(goSleepMode, 60000);
+
+// تغییر تم بر اساس ساعت
+const hour = new Date().getHours();
+if (hour >= 19 || hour < 6) current = 1;
+else current = 0;
+
+// باران، ابر، رعد و برق تصادفی
+function randomWeatherEffects() {
+  if (Math.random() < 0.5) {
+    rainCanvas.style.display = 'block';
+    drawRain();
+  } else {
+    rainCanvas.style.display = 'none';
+  }
+  cloudLayer.style.display = Math.random() < 0.4 ? 'block' : 'none';
+  if (Math.random() < 0.2) {
+    setTimeout(triggerLightning, Math.random() * 3000 + 1000);
+  }
+}
+function triggerLightning() {
+  lightningFlash.style.opacity = '0.6';
+  setTimeout(() => lightningFlash.style.opacity = '0', 100);
+}
+<style>
+body {
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity 1.6s ease, transform 1.8s ease;
+  background-color: #000;
+  overflow-x: hidden;
+}
+body.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes shakeAlert {
+  0% { transform: translate(0px, 0px); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-2px, 1px); }
+  80% { transform: translate(2px, -1px); }
+  100% { transform: translate(0px, 0px); }
+}
+.shake {
+  animation: shakeAlert 0.4s ease-in-out;
+}
+
+@keyframes cloudDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: -1000px 0; }
+}
+</style>
+<canvas id="snowCanvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:1;opacity:0;transform:scale(1.05);transition:opacity 1.8s ease,transform 2s ease;filter:blur(2px);"></canvas>
+<canvas id="rainCanvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:1;display:none;"></canvas>
+<div id="cloudLayer" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:url('https://i.imgur.com/2nCt3Sbl.png') repeat-x;background-size:cover;opacity:0.08;animation:cloudDrift 60s linear infinite;pointer-events:none;z-index:1;display:none;"></div>
+<div id="lightningFlash" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:white;opacity:0;pointer-events:none;z-index:2;"></div>
+<script>
+const canvas = document.getElementById('snowCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let snowflakes = Array(200).fill().map(() => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 2 + 1,
+  s: Math.random() * 1 + 0.5,
+  vx: 0
+}));
+let driftX = 0;
+
+function drawSnow() {
+  canvas.style.opacity = '1';
+  canvas.style.transform = 'scale(1)';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.beginPath();
+  for (let flake of snowflakes) {
+    ctx.moveTo(flake.x, flake.y);
+    ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
+  }
+  ctx.fill();
+  for (let flake of snowflakes) {
+    flake.vx += (driftX - flake.vx) * 0.1;
+    flake.x += flake.vx * flake.s;
+    flake.y += flake.s;
+    if (flake.y > canvas.height) flake.y = -10;
+    if (flake.x > canvas.width) flake.x = 0;
+    if (flake.x < 0) flake.x = canvas.width;
+  }
+  requestAnimationFrame(drawSnow);
+}
+
+const rainCanvas = document.getElementById('rainCanvas');
+const rainCtx = rainCanvas.getContext('2d');
+rainCanvas.width = window.innerWidth;
+rainCanvas.height = window.innerHeight;
+let rainDrops = Array(300).fill().map(() => ({
+  x: Math.random() * rainCanvas.width,
+  y: Math.random() * rainCanvas.height,
+  l: Math.random() * 20 + 10,
+  s: Math.random() * 2 + 2
+}));
+function drawRain() {
+  rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+  rainCtx.strokeStyle = 'rgba(173,216,230,0.2)';
+  
